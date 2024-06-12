@@ -47,19 +47,15 @@
 * **Req_4_10**: The AFDS shall include a feedback mechanism to refine the control commands based on real-time velocity measurements, ensuring smooth and precise adjustments to the target velocity.
 
 ## 5- Ground Collision Avoidance System (GCAS)
-* **Req_5_1**: The AFDS shall include functionality to prevent the aircraft from colliding with the ground.
-* **Req_5_2**: The AFDS shall continuously monitor the aircraft's altitude to ground and vertical speed to assess the risk of ground collision at a frequency of at least 10 Hz.
-* **Req_5_3**:  The AFDS shall generate a ground collision avoidance maneuver if the system detects a potential ground collision threat. The maneuver shall be designed to avoid the collision while maintaining safe flight parameters.
-* **Req_5_4**: The ground collision avoidance functionality shall override other control inputs if a ground collision is imminent.
-* **Req_5_5**: The AFDS shall override autopilot control inputs if an imminent ground collision is detected.
-* **Req_5_6**: The AFDS shall generate an immediate climb command to increase altitude when an imminent ground collision threat is detected, overriding other autopilot flight control commands.
-* **Req_5_7**: The AFDS shall provide visual and audible alerts to the pilot when a ground collision avoidance maneuver is initiated.
-* **Req_5_8**: The AFDS shall resume normal control inputs after the ground collision threat has been mitigated and the aircraft is at a safe altitude, velocity, pitch and roll angles.
+* **Req_5_1**: The GCAS shall provide functionality to prevent the aircraft from colliding with the ground.
+* **Req_5_2**: The GCAS shall continuously monitor the aircraft's altitude to ground and vertical speed to assess the risk of ground collision at a frequency of at least 10 Hz.
+* **Req_5_3**: The GCAS shall generate a ground collision avoidance maneuver if the system detects a potential ground collision threat. The maneuver shall be designed to avoid the collision while maintaining safe flight parameters.
+* **Req_5_4**: The GCAS shall override autopilot control inputs if an imminent ground collision is detected.
+* **Req_5_5**: The GCAS shall generate an immediate climb command to increase altitude when an imminent ground collision threat is detected, overriding other autopilot flight control commands.
+* **Req_5_6**: The GCAS shall resume normal control inputs after the ground collision threat has been mitigated and the aircraft is at a safe altitude, velocity, pitch and roll angles.
 
-## 6 - Self check and logging
-* **Req_6_1**: The AFDS shall perform a comprehensive self-check of all system components during initialization to ensure proper functionality.
-* **Req_6_2**: The self-check process shall be repeated periodically during operation to detect any degradation or faults that may occur during flight.
-* **Req_6_3**: The AFDS shall maintain a detailed log of all system actions, including control inputs, parameter changes, alerts, and fault events.
-* **Req_6_4**: The AFDS all ground collision avoidance maneuvers for post-flight analysis.*
-* **Req_6_5**: Log entries shall include timestamps and relevant contextual information to facilitate post-flight analysis.
-* **Req_6_6**: The log data shall be stored in non-volatile memory and remain accessible for retrieval and analysis during maintenance procedures.
+## 6 - Logging
+* **Req_6_1**: The AFDS shall maintain a detailed log of all system actions, including control inputs, parameter changes, alerts, and fault events.
+* **Req_6_2**: The AFDS shall maintain a detailed log of all ground collision avoidance maneuvers for post-flight analysis.
+* **Req_6_3**: Log entries shall include timestamps and relevant contextual information to facilitate post-flight analysis.
+* **Req_6_4**: The log data shall be stored in non-volatile memory and remain accessible for retrieval and analysis during maintenance procedures.
