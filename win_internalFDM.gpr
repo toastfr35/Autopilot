@@ -1,0 +1,14 @@
+project win_internalFDM is
+
+	for Source_Dirs use ("App/**", "Simulation/simpleFDM/**", "TestFramework/**", "Tests/**", "BSPs/win/**");
+	for Object_Dir use "obj";
+	for Exec_Dir use "obj";
+	for Languages use ("Ada", "C");
+	for Main use ("main.adb");
+	
+	package Compiler is
+		for Default_Switches ("Ada") use ("-O0", "-g", "-gnata", "-gnatwa", "-gnatw.X");
+		for Default_Switches ("C")   use ("-O0", "-g", "-Wall", "-Werror");
+	end Compiler;
+
+end win_internalFDM;

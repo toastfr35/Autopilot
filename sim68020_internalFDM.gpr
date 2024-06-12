@@ -1,0 +1,15 @@
+project sim68020_internalFDM is
+
+	for Target use "m68020-elf";
+	for Source_Dirs use ("App/**", "Simulation/simpleFDM/**", "TestFramework/**", "Tests/**", "BSPs/sim68020/**");
+	for Object_Dir use "obj";
+	for Exec_Dir use "obj";
+	for Languages use ("Ada", "C");
+	for Main use ("main.adb");
+	
+	package Compiler is
+		for Default_Switches ("Ada") use ("-O0", "-g", "-gnata", "-gnatwa", "-gnatw.X");
+		for Default_Switches ("C")   use ("-O0", "-g", "-Wall", "-Werror");
+	end Compiler;
+
+end sim68020_internalFDM;
