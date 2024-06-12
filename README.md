@@ -22,6 +22,9 @@ This project serves as a toy example to illustrate concepts related to flight co
 
 ## More info
 
-- pdf
+- [Slides](Documentation/application.pdf)
+- [Requirements](Requirements/README.md)
+- [Tests](Tests/README.md)
 
-- https://youtu.be/yFtuY9XzOBs
+## Video
+[![Video](https://img.youtube.com/vi/yFtuY9XzOBs/0.jpg)](https://youtu.be/yFtuY9XzOBs)
