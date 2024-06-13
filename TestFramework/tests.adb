@@ -12,7 +12,7 @@ package body tests is
    test_list : array(1..4096) of t_test;
    current_test : Natural;
    nb_tests : Natural := 0;
-   hz : constant Natural := 50;
+   freq_hz : constant Natural := 50;
 
    AFDS_enabled : Boolean := False;
    GCAS_enabled : Boolean := False;
@@ -111,7 +111,6 @@ package body tests is
    procedure run_steps (n : Natural) is
    begin
       for i in 1 .. n loop
-
          aircraft.status.step;
 
          if GCAS_enabled then
@@ -128,7 +127,7 @@ package body tests is
 
          aircraft.control.step;
 
-         FDM.update(hz);
+         FDM.update(freq_hz);
 
          log.step;
 
@@ -143,7 +142,9 @@ package body tests is
    -------------------------------
    procedure run_seconds (n : Natural) is
    begin
-      run_steps (n * hz);
+      for i in 1 .. n loop
+         run_steps (freq_hz);
+      end loop;
    end run_seconds;
 
 

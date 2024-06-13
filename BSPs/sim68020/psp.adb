@@ -8,7 +8,7 @@ package body psp is
 
    procedure sleep(hz : Natural) is
    begin
-     for i in 1 .. (85_000/hz) loop
+     for i in 1 .. (300_000/hz) loop
         Asm ("nop", Volatile => True);
      end loop;
    end sleep;
