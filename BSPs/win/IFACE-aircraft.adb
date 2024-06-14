@@ -150,7 +150,26 @@ package body IFACE.aircraft is
       end apply_all_commands;         
          
    end SIM;   
-              
+             
+   package body info is
+
+      function get_target_roll return t_roll is
+      begin
+         return aircraft_control.target_roll;
+      end get_target_roll;
+      
+      function get_target_pitch return t_pitch is
+      begin
+         return aircraft_control.target_pitch;
+      end get_target_pitch;
+      
+      function get_target_vertspeed return t_vertspeed is
+      begin
+         return aircraft_control.target_vertspeed;
+      end get_target_vertspeed;
+      
+   end info;      
+   
    
 end IFACE.aircraft;
 

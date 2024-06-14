@@ -1,0 +1,12 @@
+# test_4.csv
+![](heading.svg)
+![](altitude.svg)
+![](velocity.svg)
+![](position.svg)
+![](verspeed.svg)
+![](roll.svg)
+![](pitch.svg)
+![](aileron.svg)
+![](elevator.svg)
+![](rudder.svg)
+![](throttles.svg)

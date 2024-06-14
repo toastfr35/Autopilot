@@ -25,6 +25,7 @@ package IFACE.aircraft is
    end control;
 
    -- only for simulation
+
    package SIM is
       procedure set_aileron   (v : t_aileron);
       procedure set_elevator  (v : t_elevator);
@@ -41,5 +42,11 @@ package IFACE.aircraft is
       procedure set_pitch     (v : t_pitch);
       procedure apply_all_commands;
    end SIM;
+
+   package info is
+      function get_target_roll return t_roll;
+      function get_target_pitch return t_pitch;
+      function get_target_vertspeed return t_vertspeed;
+   end info;
 
 end IFACE.aircraft;

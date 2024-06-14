@@ -1,11 +1,13 @@
 
 GRPBUILD=/c/GNAT/23.1-x64/bin/gprbuild
 
+all : build_tests run
+
 build_tests : clean prep_tests
-	$(GRPBUILD) -Pwin_internalFDM.gpr -j1
+	$(GRPBUILD) -Pwin_internalFDM.gpr -j16
 
 build_notest :  prep_notest
-	$(GRPBUILD) -Pwin_internalFDM.gpr -j1
+	$(GRPBUILD) -Pwin_internalFDM.gpr -j16
 
 
 prep_tests:
