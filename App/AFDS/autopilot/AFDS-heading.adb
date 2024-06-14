@@ -21,9 +21,6 @@ package body AFDS.heading is
 
    type t_heading_correction is delta 10.0 ** (-6) range -360.0 .. 720.0;
 
-   -------------------------------
-   --
-   -------------------------------
    subtype t_roll_limit is t_roll range -75.0 .. 75.0;
    subtype t_rudder_limit is t_rudder range -30.0 .. 30.0;
 
