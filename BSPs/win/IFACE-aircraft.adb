@@ -10,7 +10,6 @@ package body IFACE.aircraft is
    -- Status of the plane
    -------------------------------
    aircraft_status : t_aircraft_status;
-   pragma Export (C, aircraft_status, "aircraft_status");
       
    function status return t_aircraft_status is
    begin
@@ -23,7 +22,6 @@ package body IFACE.aircraft is
    -------------------------------         
 
    aircraft_control : t_aircraft_control;      
-   pragma Export (C, aircraft_control, "aircraft_control");      
    
    package body control is
             

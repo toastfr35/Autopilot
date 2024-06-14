@@ -3,15 +3,15 @@
 -- This is to be used when MSFS is used as FDM
 -------------------------------------------
 
-with aircraft;
+with types; use types;
 
 package FDM is
 
-   procedure set (latitude  : aircraft.t_latitude;
-                  longitude : aircraft.t_longitude;
-                  altitude  : aircraft.t_altitude;
-                  heading   : aircraft.t_heading;
-                  velocity  : aircraft.t_velocity);
+   procedure set (latitude  : t_latitude;
+                  longitude : t_longitude;
+                  altitude  : t_altitude;
+                  heading   : t_heading;
+                  velocity  : t_velocity);
 
    procedure init;
 

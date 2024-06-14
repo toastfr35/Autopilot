@@ -1,7 +1,7 @@
 project sim68020_externalFDM is
 
 	for Target use "m68020-elf";
-	for Source_Dirs use ("App/**", "Simulation/externalFDM/**", "TestFramework/**", "Tests/**", "BSPs/sim68020/**");
+	for Source_Dirs use ("App/**", "Simulation/externalFDM/**", "TestFramework/**", "Tests/**", "BSPs/sim68020_shm/**");
 	for Object_Dir use "obj";
 	for Exec_Dir use "obj";
 	for Languages use ("Ada", "C");
