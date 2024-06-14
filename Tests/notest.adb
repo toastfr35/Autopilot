@@ -1,8 +1,7 @@
+with types;
 with tests;
 with FDM;
-with nav_AFDS;
-with nav_interface;
-with aircraft;
+with IFACE.NAV;
 with psp;
 
 package body notest is
@@ -11,7 +10,7 @@ package body notest is
    -- Run GCAS, NAV and AFDS until the target altitude is 6000
 
    procedure notest is
-      use type aircraft.t_altitude;
+      use type types.t_altitude;
    begin
 
       tests.configure ("Run", AFDS => True, GCAS => True, NAV => False);
@@ -23,9 +22,9 @@ package body notest is
                velocity => 300.0
               );
 
-      nav_interface.set_heading (0.0);
-      nav_interface.set_altitude (4000.0);
-      nav_interface.set_velocity (300.0);
+      IFACE.NAV.set_heading (0.0);
+      IFACE.NAV.set_altitude (4000.0);
+      IFACE.NAV.set_velocity (300.0);
 
       loop
 
@@ -33,7 +32,7 @@ package body notest is
 
          psp.sleep(hz => 50);
 
-         exit when nav_AFDS.get_altitude = 6000.0;
+         exit when IFACE.NAV.get_altitude = 6000.0;
 
       end loop;
 

@@ -1,6 +1,6 @@
-with nav_AFDS;
-with aircraft;
 with Ada.Text_IO; use Ada.Text_IO;
+with IFACE.aircraft;
+with IFACE.NAV;
 
 package body plot is
 
@@ -21,7 +21,7 @@ package body plot is
    procedure step is
    begin
       -- heading
-      Put_Line (f_heading, Float(nav_AFDS.get_heading)'Img & ", " & Float(aircraft.status.heading)'Img);
+      Put_Line (f_heading, Float(IFACE.NAV.get_heading)'Img & ", " & Float(IFACE.aircraft.status.heading)'Img);
    end step;
 
 

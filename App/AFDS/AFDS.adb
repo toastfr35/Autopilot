@@ -1,55 +1,62 @@
 -------------------------------------------------------
--- Package AFDS
+-- Package AFDS (Automatic Fligth Director System)
 --
--- Update the aircraft status
--- Run the auto_* tasks
--- Commit the aircraft control commands
+-- Read data on relevant interfaces
+-- Run the AFDS.* sub-tasks
+-- Commit data on relevant interfaces
 -------------------------------------------------------
 
-with nav_AFDS;
-with auto_heading;
-with auto_altitude;
-with auto_velocity;
-with auto_vspeed;
-with auto_roll;
-with auto_pitch;
-with ctrl_aileron;
-with ctrl_elevator;
-with ctrl_rudder;
-with ctrl_throttle;
+with AFDS.iface;
+with AFDS.heading;
+with AFDS.altitude;
+with AFDS.velocity;
+with AFDS.vspeed;
+with AFDS.roll;
+with AFDS.pitch;
+with AFDS.aileron;
+with AFDS.elevator;
+with AFDS.rudder;
+with AFDS.throttle;
+with AFDS.GCAS;
 
 package body AFDS is
+
 
    -------------------------------
    -- Step for the autopilot function
    -------------------------------
    procedure step is
    begin
-      nav_AFDS.step;
-      auto_heading.step;
-      auto_altitude.step;
-      auto_velocity.step;
-      auto_vspeed.step;
-      auto_roll.step;
-      auto_pitch.step;
+      AFDS.iface.read;
+      AFDS.GCAS.step;
+      AFDS.heading.step;
+      AFDS.altitude.step;
+      AFDS.velocity.step;
+      AFDS.vspeed.step;
+      AFDS.roll.step;
+      AFDS.pitch.step;
+      AFDS.iface.write;
    end step;
 
 
    -------------------------------
-   --
+   -- Reset internal states
    -------------------------------
    procedure reset is
    begin
-      auto_heading.reset;
-      auto_altitude.reset;
-      auto_velocity.reset;
-      auto_vspeed.reset;
-      auto_roll.reset;
-      auto_pitch.reset;
-      ctrl_aileron.reset;
-      ctrl_elevator.reset;
-      ctrl_rudder.reset;
-      ctrl_throttle.reset;
+      AFDS.iface.reset;
+      AFDS.heading.reset;
+      AFDS.altitude.reset;
+      AFDS.velocity.reset;
+      AFDS.vspeed.reset;
+      AFDS.roll.reset;
+      AFDS.pitch.reset;
+      AFDS.aileron.reset;
+      AFDS.elevator.reset;
+      AFDS.rudder.reset;
+      AFDS.throttle.reset;
+      AFDS.GCAS.reset;
    end reset;
+
 
 end AFDS;

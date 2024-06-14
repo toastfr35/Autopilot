@@ -1,6 +1,6 @@
 with tests;
 with FDM;
-with nav_interface;
+with IFACE.NAV;
 
 package body test006 is
 
@@ -30,9 +30,9 @@ package body test006 is
               );
 
       -- set AFDS configuration
-      nav_interface.set_heading (0.0);
-      nav_interface.set_altitude (4000.0);
-      nav_interface.set_velocity (300.0);
+      IFACE.NAV.set_heading (0.0);
+      IFACE.NAV.set_altitude (4000.0);
+      IFACE.NAV.set_velocity (300.0);
 
       -- add a few waypoints
       add_waypoint (0.0,0.1,4000.0);   -- Waypoint 1
@@ -46,7 +46,7 @@ package body test006 is
 
          procedure check_waypoint (idx : Natural) is
          begin
-            for i in 1 .. 10_000 loop
+            for i in 1 .. 20_000 loop
                tests.run_steps (1);
                waypoint := get_current_waypoint_index(success);
                exit when not success;

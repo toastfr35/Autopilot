@@ -9,15 +9,9 @@
 package GCAS is
 
    procedure step;
-   -- Step for the auto-GCAS function
+   -- Step for the GCAS function
 
    procedure reset;
    -- Reset internal state
-
-   type t_GCAS_state is (disengaged, emergency, recovery, stabilize);
-
-   function get_CGAS_state return t_GCAS_state;
-   -- Get the current state ofthe GCAS
-
 
 end GCAS;

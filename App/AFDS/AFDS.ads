@@ -1,9 +1,9 @@
 -------------------------------------------------------
--- Package AFDS
+-- Package AFDS (Automatic Fligth Director System)
 --
--- Update the aircraft status
--- Run the auto_* tasks
--- Commit the aircraft control commands
+-- Read data on relevant interfaces
+-- Run the AFDS.* sub-tasks
+-- Commit data on relevant interfaces
 -------------------------------------------------------
 
 package AFDS is
@@ -12,6 +12,6 @@ package AFDS is
    -- Step for the autopilot function
 
    procedure reset;
-   -- Reset internal state
+   -- Reset internal states
 
 end AFDS;

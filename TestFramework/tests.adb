@@ -2,7 +2,7 @@ with FDM;
 with AFDS;
 with GCAS;
 with NAV;
-with aircraft;
+
 with log;
 with img;
 with plot;
@@ -111,7 +111,6 @@ package body tests is
    procedure run_steps (n : Natural) is
    begin
       for i in 1 .. n loop
-         aircraft.status.step;
 
          if GCAS_enabled then
             GCAS.step;
@@ -124,8 +123,6 @@ package body tests is
          if AFDS_enabled then
             AFDS.step;
          end if;
-
-         aircraft.control.step;
 
          FDM.update(freq_hz);
 

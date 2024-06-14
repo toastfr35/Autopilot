@@ -1,7 +1,7 @@
 with tests;
 with FDM;
-with nav_interface;
-with aircraft;
+with IFACE.NAV;
+with IFACE.aircraft;
 
 package body test004 is
 
@@ -23,17 +23,17 @@ package body test004 is
               );
 
       -- set AFDS configuration
-      nav_interface.set_heading (130.0);
-      nav_interface.set_altitude (4000.0);
-      nav_interface.set_velocity (450.0);
+      IFACE.NAV.set_heading (130.0);
+      IFACE.NAV.set_altitude (4000.0);
+      IFACE.NAV.set_velocity (450.0);
 
       -- run for 120 seconds
       tests.run_seconds (120);
 
       -- check aircraft state
-      tests.check ("Altitude", Float(aircraft.status.altitude), 4000.0, 100.0);
-      tests.check ("Velocity", Float(aircraft.status.velocity), 450.0,  10.0);
-      tests.check ("Heading" , Float(aircraft.status.heading),  130.0,    3.0);
+      tests.check ("Altitude", Float(IFACE.aircraft.status.altitude), 4000.0, 100.0);
+      tests.check ("Velocity", Float(IFACE.aircraft.status.velocity), 450.0,  10.0);
+      tests.check ("Heading" , Float(IFACE.aircraft.status.heading),  130.0,    3.0);
 
    end test004;
 
