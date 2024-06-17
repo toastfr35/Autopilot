@@ -1,6 +1,6 @@
-# Autopilot demo (AFDS + GCAS + NAV)
+# Autopilot demo (AFDS + GCAS + NAV + CDU)
 
-The Autopilot Flight Director System (AFDS), Ground Collision Avoidance System (GCAS) and waypoint navigation system (NAV) are demonstration avionics software modules designed to showcase basic automated flight control functionalities for manned aircraft. 
+The Autopilot Flight Director System (AFDS), Ground Collision Avoidance System (GCAS), waypoint navigation system (NAV) and Control & Display Unit (CDU) are demonstration avionics software modules designed to showcase basic automated flight control functionalities for manned aircraft. 
 This project serves as a toy example to illustrate concepts related to flight control systems.
 
 ## Disclaimer:
