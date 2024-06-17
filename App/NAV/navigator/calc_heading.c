@@ -1,11 +1,10 @@
 #include "waypoints.h"
 #include "math.h"
 
-
 static float radians (float deg) {return deg * M_PI / 180.0;}
 
-
-float calculate_heading(t_waypoint from, t_waypoint to) {
+float calculate_heading(t_waypoint from, t_waypoint to)
+{
   float Lat1 = radians(from.latitude);
   float Lon1 = radians(from.longitude);
   float Lat2 = radians(to.latitude);

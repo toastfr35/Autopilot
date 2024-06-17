@@ -1,11 +1,15 @@
 with System;
-with Interfaces.C;
-with IFACE.aircraft;
-with IFACE.NAV;
+with components; use components;
+with Interfaces;
+with COMIF.aircraft;
+with COMIF.NAV;
 with img;
 
 
 package body plot is
+
+   NAV_distance : Float;
+   pragma Import (C, NAV_distance, "NAV_distance");
 
    -- FILEOUT plugin interface
    procedure fileio_open (filename : System.Address; len : Interfaces.Unsigned_32);
@@ -41,7 +45,7 @@ package body plot is
                 "NAV_heading,Heading,NAV_altitude,Altitude,NAV_velocity,Velocity," &
                 "Latitude,Longitude," &
                 "Target_vertspeed,Vertspeed,Target_roll,Roll,Tartget_pitch,Pitch," &
-                "Aileron,Elevator,Rudder,Throttle1,Throttle2"
+                "Aileron,Elevator,Rudder,Throttle1,Throttle2,NAV_distance"
                );
    end open;
 
@@ -53,37 +57,40 @@ package body plot is
 
 
    procedure step is
+      aircraft_status : constant COMIF.aircraft.t_aircraft_status := COMIF.aircraft.read_status (Comp_TEST);
+      aircraft_control : constant COMIF.aircraft.t_aircraft_control := COMIF.aircraft.read_control (Comp_TEST);
+      NAV_status : constant COMIF.NAV.t_NAV_status := COMIF.NAV.read_status (Comp_TEST);
    begin
 
-      WriteFile (
-                img.Image(Float(IFACE.NAV.get_heading)) & ", "
-                & img.Image(Float(IFACE.aircraft.status.heading)) & ", "
+      -- heading
+      WriteFile ( img.Image(Float(NAV_status.nav_target.heading)) & ", "
+                & img.Image(Float(aircraft_status.heading)) & ", "
 
-                & img.Image(Float(IFACE.NAV.get_altitude)) & ", "
-                & img.Image(Float(IFACE.aircraft.status.altitude)) & ", "
+                & img.Image(Float(NAV_status.nav_target.altitude)) & ", "
+                & img.Image(Float(aircraft_status.altitude)) & ", "
 
-                & img.Image(Float(IFACE.NAV.get_velocity)) & ", "
-                & img.Image(Float(IFACE.aircraft.status.velocity)) & ", "
+                & img.Image(Float(NAV_status.nav_target.velocity)) & ", "
+                & img.Image(Float(aircraft_status.velocity)) & ", "
 
-                & img.Image(Float(IFACE.aircraft.status.latitude)) & ", "
-                & img.Image(Float(IFACE.aircraft.status.longitude)) & ", "
+                & img.Image(Float(aircraft_status.latitude)) & ", "
+                & img.Image(Float(aircraft_status.longitude)) & ", "
 
-                & img.Image(Float(IFACE.aircraft.info.get_target_vertspeed)) & ", "
-                & img.Image(Float(IFACE.aircraft.status.vertspeed)) & ", "
+                & img.Image(Float(aircraft_control.target_vertspeed)) & ", "
+                & img.Image(Float(aircraft_status.vertspeed)) & ", "
 
-                & img.Image(Float(IFACE.aircraft.info.get_target_roll)) & ", "
-                & img.Image(Float(IFACE.aircraft.status.roll)) & ", "
+                & img.Image(Float(aircraft_control.target_roll)) & ", "
+                & img.Image(Float(aircraft_status.roll)) & ", "
 
-                & img.Image(Float(IFACE.aircraft.info.get_target_pitch)) & ", "
-                & img.Image(Float(IFACE.aircraft.status.pitch)) & ", "
+                & img.Image(Float(aircraft_control.target_pitch)) & ", "
+                & img.Image(Float(aircraft_status.pitch)) & ", "
 
-                & img.Image(Float(IFACE.aircraft.status.aileron)) & ", "
-                & img.Image(Float(IFACE.aircraft.status.elevator)) & ", "
-                & img.Image(Float(IFACE.aircraft.status.rudder)) & ", "
-                & img.Image(Float(IFACE.aircraft.status.throttle1)) & ", "
-                & img.Image(Float(IFACE.aircraft.status.throttle2))
+                & img.Image(Float(aircraft_status.aileron)) & ", "
+                & img.Image(Float(aircraft_status.elevator)) & ", "
+                & img.Image(Float(aircraft_status.rudder)) & ", "
+                & img.Image(Float(aircraft_status.throttle1)) & ", "
+                & img.Image(Float(aircraft_status.throttle2)) & ", "
+                & img.Image(NAV_distance)
                );
-
    end step;
 
 

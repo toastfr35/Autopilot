@@ -7,7 +7,7 @@
 with types; use types;
 
 with AFDS.iface.aircraft;
-with AFDS.iface.NAV;
+with AFDS.iface.AFDS;
 with AFDS.vspeed;
 
 with lookuptable;
@@ -35,10 +35,10 @@ package body AFDS.altitude is
                          (25.0,   3.0),
                          (50.0,   5.0),
                          (75.0,   7.0),
-                         (100.0,  15.0),
-                         (200.0,  30.0),
-                         (500.0,  60.0),
-                         (1000.0, 120.0),
+                         (100.0,  30.0),
+                         (200.0,  50.0),
+                         (500.0,  100.0),
+                         (1000.0, 150.0),
                          (t_altitude_correction'Last, 150.0)
                         );
 
@@ -59,10 +59,10 @@ package body AFDS.altitude is
    -------------------------------
    function altitude_correction return t_altitude_correction is
       a : constant t_altitude := AFDS.iface.aircraft.status.altitude;
-      a_t : constant t_altitude := AFDS.iface.NAV.get_altitude;
+      a_t : constant t_altitude := AFDS.iface.AFDS.status.nav_target.altitude;
    begin
       if a_t /= prev_target_altitude then
-         pragma Debug (log.log (log.altitude, 1, 0, "Target altitude:" & img.Image(a_t)));
+         pragma Debug (log.log (log.AFDS, 1, 0, "AFDS: Target altitude:" & img.Image(a_t)));
          prev_target_altitude := a_t;
       end if;
       return t_altitude_correction (Float(a_t) - Float(a));

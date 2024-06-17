@@ -1,7 +1,7 @@
 -------------------------------------------------------
 -- Package AFDS.GCAS
 --
--- Apply GCAS maneuver
+-- Apply GCAS manoeuvre if required
 -------------------------------------------------------
 
 with types; use types;
@@ -27,16 +27,16 @@ package body AFDS.GCAS is
    procedure step is
    begin
       -- apply GCAS command overrides
-      case AFDS.iface.GCAS.get_state is
+      case AFDS.iface.GCAS.status.GCAS_state is
 
          when GCAS_state_emergency =>
             AFDS.roll.set_emergency_override (True, 0.0);
-            AFDS.pitch.set_emergency_override (True, -80.0);
+            AFDS.pitch.set_emergency_override (True, -70.0);
             AFDS.velocity.set_emergency_override (True);
 
          when GCAS_state_recovery =>
             AFDS.roll.set_emergency_override (True, 0.0);
-            AFDS.pitch.set_emergency_override (True, -40.0);
+            AFDS.pitch.set_emergency_override (True, -30.0);
             AFDS.velocity.set_emergency_override (True);
 
          when GCAS_state_stabilize =>

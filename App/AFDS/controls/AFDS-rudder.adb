@@ -29,7 +29,7 @@ package body AFDS.rudder is
    procedure set_target(v : t_rudder) is
    begin
       p_average.add (Float(v));
-      AFDS.iface.aircraft.control.set_rudder(t_rudder(p_average.get));
+      AFDS.iface.aircraft.control.command_rudder := t_rudder(p_average.get);
    end set_target;
 
 

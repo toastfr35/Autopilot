@@ -1,7 +1,7 @@
 with System;
-with Interfaces.C;
-with IFACE.aircraft;
-with IFACE.NAV;
+with Interfaces;
+with COMIF.aircraft;
+with COMIF.NAV;
 with img;
 
 
@@ -56,32 +56,32 @@ package body plot is
    begin
 
       WriteFile (
-                img.Image(Float(IFACE.NAV.get_heading)) & ", "
-                & img.Image(Float(IFACE.aircraft.status.heading)) & ", "
+                img.Image(Float(COMIF.NAV.get_heading)) & ", "
+                & img.Image(Float(COMIF.aircraft.status.heading)) & ", "
 
-                & img.Image(Float(IFACE.NAV.get_altitude)) & ", "
-                & img.Image(Float(IFACE.aircraft.status.altitude)) & ", "
+                & img.Image(Float(COMIF.NAV.get_altitude)) & ", "
+                & img.Image(Float(COMIF.aircraft.status.altitude)) & ", "
 
-                & img.Image(Float(IFACE.NAV.get_velocity)) & ", "
-                & img.Image(Float(IFACE.aircraft.status.velocity)) & ", "
+                & img.Image(Float(COMIF.NAV.get_velocity)) & ", "
+                & img.Image(Float(COMIF.aircraft.status.velocity)) & ", "
 
-                & img.Image(Float(IFACE.aircraft.status.latitude)) & ", "
-                & img.Image(Float(IFACE.aircraft.status.longitude)) & ", "
+                & img.Image(Float(COMIF.aircraft.status.latitude)) & ", "
+                & img.Image(Float(COMIF.aircraft.status.longitude)) & ", "
 
-                & img.Image(Float(IFACE.aircraft.info.get_target_vertspeed)) & ", "
-                & img.Image(Float(IFACE.aircraft.status.vertspeed)) & ", "
+                & img.Image(Float(COMIF.aircraft.info.get_target_vertspeed)) & ", "
+                & img.Image(Float(COMIF.aircraft.status.vertspeed)) & ", "
 
-                & img.Image(Float(IFACE.aircraft.info.get_target_roll)) & ", "
-                & img.Image(Float(IFACE.aircraft.status.roll)) & ", "
+                & img.Image(Float(COMIF.aircraft.info.get_target_roll)) & ", "
+                & img.Image(Float(COMIF.aircraft.status.roll)) & ", "
 
-                & img.Image(Float(IFACE.aircraft.info.get_target_pitch)) & ", "
-                & img.Image(Float(IFACE.aircraft.status.pitch)) & ", "
+                & img.Image(Float(COMIF.aircraft.info.get_target_pitch)) & ", "
+                & img.Image(Float(COMIF.aircraft.status.pitch)) & ", "
 
-                & img.Image(Float(IFACE.aircraft.status.aileron)) & ", "
-                & img.Image(Float(IFACE.aircraft.status.elevator)) & ", "
-                & img.Image(Float(IFACE.aircraft.status.rudder)) & ", "
-                & img.Image(Float(IFACE.aircraft.status.throttle1)) & ", "
-                & img.Image(Float(IFACE.aircraft.status.throttle2))
+                & img.Image(Float(COMIF.aircraft.status.aileron)) & ", "
+                & img.Image(Float(COMIF.aircraft.status.elevator)) & ", "
+                & img.Image(Float(COMIF.aircraft.status.rudder)) & ", "
+                & img.Image(Float(COMIF.aircraft.status.throttle1)) & ", "
+                & img.Image(Float(COMIF.aircraft.status.throttle2))
                );
 
    end step;

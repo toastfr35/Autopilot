@@ -5,6 +5,7 @@
 -------------------------------------------------------
 
 with AFDS.iface.aircraft;
+with AFDS.iface.AFDS;
 with AFDS.iface.NAV;
 with AFDS.iface.GCAS;
 
@@ -15,9 +16,10 @@ package body AFDS.iface is
    -------------------------------
    procedure reset is
    begin
-      AFDS.iface.aircraft.reset;
-      AFDS.iface.GCAS.reset;
-      AFDS.iface.NAV.reset;
+      AFDS.reset;
+      aircraft.reset;
+      GCAS.reset;
+      NAV.reset;
    end reset;
 
 
@@ -26,9 +28,10 @@ package body AFDS.iface is
    -------------------------------
    procedure read is
    begin
-      AFDS.iface.aircraft.read;
-      AFDS.iface.GCAS.read;
-      AFDS.iface.NAV.read;
+      AFDS.read;
+      aircraft.read;
+      GCAS.read;
+      NAV.read;
    end read;
 
 
@@ -37,7 +40,8 @@ package body AFDS.iface is
    -------------------------------
    procedure write is
    begin
-      AFDS.iface.aircraft.write;
+      AFDS.write;
+      aircraft.write;
    end write;
 
 end AFDS.iface;

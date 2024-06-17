@@ -2,8 +2,7 @@
 -- Package GCAS.IMPL
 --
 -- Ground Collision Avoidance System
--- Detect potential collision with the ground and execute
--- emergency avoidance maneuver if required
+-- Detect potential collision with the ground
 -------------------------------------------------------
 
 with types; use types;
@@ -14,39 +13,21 @@ with log;
 
 package body GCAS.IMPL is
 
-   prev_GCAS_state : t_GCAS_state := GCAS_state_disengaged;
+   collision_altitude : constant t_altitude := 200.0;
 
-   emergency_low_altitude : constant t_altitude := 200.0;
+   emergency_altitude : constant t_altitude := 600.0;
 
-   recovery_low_altitube : constant t_altitude := 1000.0;
+   recovery_altitude : constant t_altitude := 1500.0;
 
-   init_timeout : Natural := 1000;
-
+   stable_altitude : constant t_altitude := 1400.0;
 
    -------------------------------
    -- Reset internal state
    -------------------------------
    procedure reset is
    begin
-      prev_GCAS_state := GCAS_state_disengaged;
-      init_timeout := 1000;
+      null;
    end reset;
-
-
-   -------------------------------
-   -- Log the change of state
-   -------------------------------
-   procedure log_GCAS_state_change is
-   begin
-      if GCAS.iface.GCAS.get_state /= prev_GCAS_state then
-         case GCAS.iface.GCAS.get_state is
-            when GCAS_state_emergency  => pragma Debug (log.log (log.GCAS, 1, 0, "GCAS: emergency"));
-            when GCAS_state_recovery   => pragma Debug (log.log (log.GCAS, 1, 0, "GCAS: recovery"));
-            when GCAS_state_stabilize   => pragma Debug (log.log (log.GCAS, 1, 0, "GCAS: stabilize"));
-            when GCAS_state_disengaged => pragma Debug (log.log (log.GCAS, 1, 0, "GCAS: disengaged"));
-         end case;
-      end if;
-   end log_GCAS_state_change;
 
 
    -------------------------------
@@ -57,32 +38,48 @@ package body GCAS.IMPL is
       vspeed   : constant t_vertspeed := GCAS.iface.aircraft.status.vertspeed;
       predicted_altitude : constant t_altitude := altitude + t_altitude (5.0 * vspeed);
    begin
-      if predicted_altitude <= emergency_low_altitude then
-         GCAS.iface.GCAS.set_state (GCAS_state_emergency);
+
+      if predicted_altitude <= collision_altitude then
+
+         -- emergency collision avoidance
+         if GCAS.iface.GCAS.status.GCAS_state /= GCAS_state_emergency then
+            pragma Debug (log.log (log.GCAS, 1, 0, "GCAS: emergency"));
+            GCAS.iface.GCAS.status.GCAS_state := GCAS_state_emergency;
+         end if;
+
+      else
+
+         case GCAS.iface.GCAS.status.GCAS_state is
+
+         when GCAS_state_emergency =>
+            -- emergency -> recovery
+            if vspeed > 5.0 and then altitude > emergency_altitude then
+               pragma Debug (log.log (log.GCAS, 1, 0, "GCAS: recovery"));
+               GCAS.iface.GCAS.status.GCAS_state := GCAS_state_recovery;
+            end if;
+
+         when GCAS_state_recovery =>
+            -- recovery -> stabilize
+            if altitude > recovery_altitude then
+               pragma Debug (log.log (log.GCAS, 1, 0, "GCAS: stabilize"));
+               GCAS.iface.GCAS.status.GCAS_state := GCAS_state_stabilize;
+            end if;
+
+         when GCAS_state_stabilize =>
+            -- stabilize -> disengaged
+            if altitude > stable_altitude and then GCAS.iface.aircraft.status.pitch in -2.0 .. 2.0  then
+               pragma Debug (log.log (log.GCAS, 1, 0, "GCAS: disengaged"));
+               GCAS.iface.GCAS.status.GCAS_state := GCAS_state_disengaged;
+            end if;
+
+         when GCAS_state_disengaged =>
+            null;
+
+         end case;
+
       end if;
 
-      -- stabilize -> disengaged IF pitch ~= 0 & high enough
-      if GCAS.iface.GCAS.get_state = GCAS_state_stabilize and then
-        altitude > recovery_low_altitube and then
-        GCAS.iface.aircraft.status.pitch in -5.0 .. 5.0
-      then
-         GCAS.iface.GCAS.set_state (GCAS_state_disengaged);
-      end if;
 
-      -- recovery -> stabilize IF high enough
-      if GCAS.iface.GCAS.get_state = GCAS_state_recovery and then
-        altitude > recovery_low_altitube
-      then
-         GCAS.iface.GCAS.set_state (GCAS_state_stabilize);
-      end if;
-
-      -- emergency -> recovery IF moving up and high enough
-      if GCAS.iface.GCAS.get_state = GCAS_state_emergency and then
-        vspeed > 5.0 and then
-        altitude > emergency_low_altitude
-      then
-         GCAS.iface.GCAS.set_state (GCAS_state_recovery);
-      end if;
    end update_GCAS_state;
 
 
@@ -91,13 +88,7 @@ package body GCAS.IMPL is
    -------------------------------
    procedure step is
    begin
-      if init_timeout > 0 then
-         init_timeout := init_timeout - 1;
-         return;
-      end if;
       update_GCAS_state;
-      log_GCAS_state_change;
-      prev_GCAS_state := GCAS.iface.GCAS.get_state;
    end step;
 
 

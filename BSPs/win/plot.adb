@@ -1,10 +1,14 @@
 with Ada.Text_IO; use Ada.Text_IO;
-with IFACE.aircraft;
-with IFACE.NAV;
+with components; use components;
+with COMIF.aircraft;
+with COMIF.NAV;
 
 package body plot is
 
    f : Ada.Text_IO.File_Type;
+
+   NAV_distance : Float;
+   pragma Import (C, NAV_distance, "NAV_distance");
 
    procedure open (id : Natural) is
       str : String := id'Img;
@@ -16,7 +20,7 @@ package body plot is
                 "NAV_heading,Heading,NAV_altitude,Altitude,NAV_velocity,Velocity," &
                 "Latitude,Longitude," &
                 "Target_vertspeed,Vertspeed,Target_roll,Roll,Tartget_pitch,Pitch," &
-                "Aileron,Elevator,Rudder,Throttle1,Throttle2"
+                "Aileron,Elevator,Rudder,Throttle1,Throttle2,NAV_distance"
                );
    end open;
 
@@ -28,36 +32,40 @@ package body plot is
 
 
    procedure step is
+      aircraft_status : constant COMIF.aircraft.t_aircraft_status := COMIF.aircraft.read_status (Comp_TEST);
+      aircraft_control : constant COMIF.aircraft.t_aircraft_control := COMIF.aircraft.read_control (Comp_TEST);
+      NAV_status : constant COMIF.NAV.t_NAV_status := COMIF.NAV.read_status (Comp_TEST);
    begin
 
       -- heading
       Put_Line (f,
-                Float(IFACE.NAV.get_heading)'Img & ", "
-                & Float(IFACE.aircraft.status.heading)'Img & ", "
+                Float(NAV_status.nav_target.heading)'Img & ", "
+                & Float(aircraft_status.heading)'Img & ", "
 
-                & Float(IFACE.NAV.get_altitude)'Img & ", "
-                & Float(IFACE.aircraft.status.altitude)'Img & ", "
+                & Float(NAV_status.nav_target.altitude)'Img & ", "
+                & Float(aircraft_status.altitude)'Img & ", "
 
-                & Float(IFACE.NAV.get_velocity)'Img & ", "
-                & Float(IFACE.aircraft.status.velocity)'Img & ", "
+                & Float(NAV_status.nav_target.velocity)'Img & ", "
+                & Float(aircraft_status.velocity)'Img & ", "
 
-                & Float(IFACE.aircraft.status.latitude)'Img & ", "
-                & Float(IFACE.aircraft.status.longitude)'Img & ", "
+                & Float(aircraft_status.latitude)'Img & ", "
+                & Float(aircraft_status.longitude)'Img & ", "
 
-                & Float(IFACE.aircraft.info.get_target_vertspeed)'Img & ", "
-                & Float(IFACE.aircraft.status.vertspeed)'Img & ", "
+                & Float(aircraft_control.target_vertspeed)'Img & ", "
+                & Float(aircraft_status.vertspeed)'Img & ", "
 
-                & Float(IFACE.aircraft.info.get_target_roll)'Img & ", "
-                & Float(IFACE.aircraft.status.roll)'Img & ", "
+                & Float(aircraft_control.target_roll)'Img & ", "
+                & Float(aircraft_status.roll)'Img & ", "
 
-                & Float(IFACE.aircraft.info.get_target_pitch)'Img & ", "
-                & Float(IFACE.aircraft.status.pitch)'Img & ", "
+                & Float(aircraft_control.target_pitch)'Img & ", "
+                & Float(aircraft_status.pitch)'Img & ", "
 
-                & Float(IFACE.aircraft.status.aileron)'Img & ", "
-                & Float(IFACE.aircraft.status.elevator)'Img & ", "
-                & Float(IFACE.aircraft.status.rudder)'Img & ", "
-                & Float(IFACE.aircraft.status.throttle1)'Img & ", "
-                & Float(IFACE.aircraft.status.throttle2)'Img
+                & Float(aircraft_status.aileron)'Img & ", "
+                & Float(aircraft_status.elevator)'Img & ", "
+                & Float(aircraft_status.rudder)'Img & ", "
+                & Float(aircraft_status.throttle1)'Img & ", "
+                & Float(aircraft_status.throttle2)'Img & ", "
+                & NAV_distance'Img
                );
 
    end step;

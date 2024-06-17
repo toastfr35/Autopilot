@@ -12,7 +12,7 @@ package body AFDS.vspeed is
 
    type t_vertspeed_correction is delta 10.0 ** (-3) range -2000.0 .. 2000.0;
 
-   subtype t_pitch_limit is Float range -30.0 .. 30.0;
+   subtype t_pitch_limit is Float range -440.0 .. 40.0;
 
    target_vspeed : t_vertspeed := 0.0;
 
@@ -44,7 +44,7 @@ package body AFDS.vspeed is
       v : constant t_vertspeed := AFDS.iface.aircraft.status.vertspeed;
       v_t : constant t_vertspeed := target_vspeed;
    begin
-      AFDS.iface.aircraft.control.set_target_vertspeed (target_vspeed);
+      AFDS.iface.aircraft.control.target_vertspeed := target_vspeed;
       return t_vertspeed_correction (v_t - v);
    end vspeed_correction;
 

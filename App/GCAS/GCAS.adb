@@ -12,7 +12,7 @@ with GCAS.impl;
 package body GCAS is
 
    -------------------------------
-   -- Step for the autopilot function
+   -- Step for the GCAS function
    -------------------------------
    procedure step is
    begin

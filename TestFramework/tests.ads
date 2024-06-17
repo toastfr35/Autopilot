@@ -18,7 +18,7 @@ package tests is
 
    -- Test API
 
-   procedure configure (testname : String; AFDS, GCAS, NAV: Boolean);
+   procedure configure (testname : String; AFDS, GCAS, NAV, CDU: Boolean := False);
 
    procedure run_steps (n : Natural);
 

@@ -4,7 +4,11 @@
 -- Read/Write the HW interfaces for use by GCAS
 -------------------------------------------------------
 
+with components;
+
 package GCAS.iface is
+
+   current_component : constant components.t_component := components.Comp_GCAS;
 
    procedure reset;
    -- reset the GCAS views of the HW interfaces

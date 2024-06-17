@@ -7,7 +7,7 @@
 with types; use types;
 
 with AFDS.iface.aircraft;
-with AFDS.iface.NAV;
+with AFDS.iface.AFDS;
 with AFDS.throttle;
 
 with log;
@@ -47,10 +47,10 @@ package body AFDS.velocity is
    -------------------------------
    function velocity_correction return t_velocity_correction is
       v : constant t_velocity := AFDS.iface.aircraft.status.velocity;
-      v_t : constant t_velocity := AFDS.iface.NAV.get_velocity;
+      v_t : constant t_velocity := AFDS.iface.AFDS.status.nav_target.velocity;
    begin
       if v_t /=  prev_target_velocity then
-         pragma Debug (log.log (log.velocity, 1, 0, "Target velocity:" & img.Image(float(v_t))));
+         pragma Debug (log.log (log.AFDS, 1, 0, "AFDS: Target velocity:" & img.Image(float(v_t))));
          prev_target_velocity := v_t;
       end if;
       return t_velocity_correction (Float(v_t) - Float(v));

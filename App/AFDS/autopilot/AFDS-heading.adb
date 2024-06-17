@@ -7,7 +7,7 @@
 with types; use types;
 
 with AFDS.iface.aircraft;
-with AFDS.iface.NAV;
+with AFDS.iface.AFDS;
 with AFDS.roll;
 with AFDS.pitch;
 with AFDS.rudder;
@@ -80,14 +80,14 @@ package body AFDS.heading is
    -------------------------------
    function heading_correction return t_heading_correction is
       current : constant t_heading := AFDS.iface.aircraft.status.heading;
-      target : constant t_heading := AFDS.iface.NAV.get_heading;
+      target : constant t_heading := AFDS.iface.AFDS.status.nav_target.heading;
       error : t_heading;
       error_is_positive : Boolean;
       correction : t_heading_correction;
    begin
 
       if target /= prev_target_heading then
-         pragma Debug (log.log (log.altitude, 1, 0, "Target heading:" & img.Image(target)));
+         pragma Debug (log.log (log.AFDS, 1, 0, "AFDS: Target heading:" & img.Image(target)));
          prev_target_heading := target;
       end if;
 

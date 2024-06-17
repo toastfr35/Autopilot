@@ -21,6 +21,7 @@ plots = [
     ("Elevator", "elevator.svg", ["Elevator"]),
     ("Rudder", "rudder.svg", ["Rudder"]),
     ("Throttles", "throttles.svg", ["Throttle1", "Throttle2"]),
+    ("NAV_Distance", "distance.svg", ["NAV_distance"]),
 ]
 
 

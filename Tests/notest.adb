@@ -1,7 +1,8 @@
 with types;
 with tests;
 with FDM;
-with IFACE.NAV;
+with COMIF.NAV;
+with COMIF.AFDS;
 with psp;
 
 package body notest is
@@ -22,9 +23,16 @@ package body notest is
                velocity => 300.0
               );
 
-      IFACE.NAV.set_heading (0.0);
-      IFACE.NAV.set_altitude (4000.0);
-      IFACE.NAV.set_velocity (300.0);
+      declare
+         AFDS_status : COMIF.AFDS.t_AFDS_status := COMIF.AFDS.read_status (Comp_TEST);
+      begin
+         AFDS_status.enabled := True;
+         COMIF.AFDS.set_enabled_by_mode (True);
+         COMIF.NAV.set_heading (0.0);
+         COMIF.NAV.set_altitude (4000.0);
+         COMIF.NAV.set_velocity (300.0);
+         COMIF.AFDS.write_status (Comp_TEST, AFDS_status);
+      end;
 
       loop
 
@@ -32,7 +40,7 @@ package body notest is
 
          psp.sleep(hz => 50);
 
-         exit when IFACE.NAV.get_altitude = 6000.0;
+         exit when COMIF.NAV.get_altitude = 6000.0;
 
       end loop;
 

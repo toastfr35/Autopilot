@@ -2,6 +2,8 @@ with FDM;
 with AFDS;
 with GCAS;
 with NAV;
+with CDU;
+with COMIF;
 
 with log;
 with img;
@@ -17,6 +19,7 @@ package body tests is
    AFDS_enabled : Boolean := False;
    GCAS_enabled : Boolean := False;
    NAV_enabled : Boolean := False;
+   CDU_enabled : Boolean := False;
 
    -------------------------------
    --
@@ -52,16 +55,18 @@ package body tests is
          NAV_enabled  := False;
 
          FDM.init;
+         COMIF.reset;
          AFDS.reset;
          GCAS.reset;
          NAV.reset;
+         CDU.reset;
 
          begin
             test_list(i).proc.all;
             test_list(i).completed := True;
-         exception
-            when others =>
-               null;
+         --exception
+         --   when others =>
+         --      null;
          end;
 
          if not test_list(i).completed then
@@ -96,12 +101,13 @@ package body tests is
    -------------------------------
    --
    -------------------------------
-   procedure configure (testname : String; AFDS, GCAS, NAV: Boolean) is
+   procedure configure (testname : String; AFDS, GCAS, NAV, CDU: Boolean := False) is
    begin
       log.log (log.test, 1, 0, "TEST '" & testname & "'");
       AFDS_enabled := AFDS;
       GCAS_enabled := GCAS;
       NAV_enabled := NAV;
+      CDU_enabled := CDU;
    end configure;
 
 
@@ -111,6 +117,12 @@ package body tests is
    procedure run_steps (n : Natural) is
    begin
       for i in 1 .. n loop
+
+         --log.log (log.test, 1, 0, "TEST: Step");
+
+         if CDU_enabled then
+            CDU.step;
+         end if;
 
          if GCAS_enabled then
             GCAS.step;
@@ -151,10 +163,10 @@ package body tests is
    procedure check (msg : String; value, expected, margin : Float) is
    begin
       if not (value in (expected-margin) .. (expected+margin)) then
-         log.log (log.test, 1, 0, "Failed " & msg & ": " & img.Image(value) & " " & img.Image(expected) & "  +- " & img.Image(margin) );
+         log.log (log.test, 1, 0, "TEST: Failed " & msg & ": " & img.Image(value) & " " & img.Image(expected) & "  +- " & img.Image(margin) );
          test_list(current_test).success := False;
       else
-         log.log (log.test, 1, 0, "Checked " & msg & ": OK");
+         log.log (log.test, 1, 0, "TEST: Checked " & msg & ": OK");
       end if;
    end check;
 
@@ -165,10 +177,10 @@ package body tests is
    procedure check (msg : String; assert : Boolean) is
    begin
       if not assert then
-         log.log (log.test, 1, 0, "Failed " & msg);
+         log.log (log.test, 1, 0, "TEST: Failed " & msg);
          test_list(current_test).success := False;
       else
-         log.log (log.test, 1, 0, "Checked " & msg & ": OK");
+         log.log (log.test, 1, 0, "TEST: Checked " & msg & ": OK");
       end if;
    end check;
 

@@ -1,38 +1,22 @@
 -------------------------------------------------------
 -- Package AFDS.IFACE.AIRCRAFT
 --
--- This package provides
--- * read access to the aircraft status for AFDS
--- * write access to the aircraft controls for AFDS
+-- Read current aircraft status
+-- Write to aircraft controls
 -------------------------------------------------------
 
-with types; use types;
+with COMIF.aircraft;
 
 package AFDS.iface.aircraft is
 
-   function status return t_aircraft_status;
-   -- the aircraft status for AFDS
+   subtype t_aircraft_status  is COMIF.aircraft.t_aircraft_status;
+   subtype t_aircraft_control is COMIF.aircraft.t_aircraft_control;
 
-   package control is
-      -- aircraft controls
-      procedure set_aileron (v : t_aileron);
-      procedure set_elevator (v : t_elevator);
-      procedure set_rudder (v : t_rudder);
-      procedure set_throttles (v1, v2 : t_throttle);
-
-      -- aircraft control information (output infos)
-      procedure set_target_roll (v : t_roll);
-      procedure set_target_pitch (v : t_pitch);
-      procedure set_target_vertspeed (v : t_vertspeed);
-   end control;
-
-   procedure read;
-   -- update input
-
-   procedure write;
-   -- update output
+   status  : t_aircraft_status;
+   control : t_aircraft_control;
 
    procedure reset;
-   -- reset internal state
+   procedure read;
+   procedure write;
 
 end AFDS.iface.aircraft;

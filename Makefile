@@ -6,7 +6,7 @@ all : build_tests run
 build_tests : clean prep_tests
 	$(GRPBUILD) -Pwin_internalFDM.gpr -j16
 
-build_notest :  prep_notest
+build_notest : clean prep_notest
 	$(GRPBUILD) -Pwin_internalFDM.gpr -j16
 
 

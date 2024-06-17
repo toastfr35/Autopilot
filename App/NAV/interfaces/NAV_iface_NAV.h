@@ -6,22 +6,30 @@
 -- * write access to the NAV controls for NAV
 -------------------------------------------------------*/
 
+#include "waypoints.h"
 #include <stdbool.h>
+#include <stdint.h>
 
-bool  NAV_iface_NAV_get_enabled  (void);
-float NAV_iface_NAV_get_heading  (void);
-float NAV_iface_NAV_get_altitude (void);
-float NAV_iface_NAV_get_velocity (void);
+typedef struct {
+  float heading;
+  float altitude;
+  float velocity;
+} t_nav_target;
 
-void NAV_iface_NAV_set_enabled  (bool);
-void NAV_iface_NAV_set_heading  (float);
-void NAV_iface_NAV_set_altitude (float);
-void NAV_iface_NAV_set_velocity (float);
+typedef struct {
+  bool enabled;
+  t_nav_target nav_target;
+  float target_latitude;
+  float target_longitude;
+  uint32_t current_waypoint_index;
+  t_waypoints waypoints;
+} t_NAV_status;
 
-void NAV_iface_NAV_read(void);
+extern t_NAV_status NAV_NAV_status;
 
-void NAV_iface_NAV_write(void);
+
+void NAV_iface_NAV_read (void);
+
+void NAV_iface_NAV_write (void);
 
 void NAV_iface_NAV_reset (void);
-
-

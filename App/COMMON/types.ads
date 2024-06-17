@@ -6,6 +6,10 @@
 
 package types is
 
+   -- Base types
+
+   subtype t_Bool32 is Boolean;
+
    -- Aircraft position
 
    type t_latitude is delta 10.0 ** (-6) range -90.0 .. 90.0;
@@ -45,40 +49,33 @@ package types is
    type t_rudder is new t_control range -100.0 .. 100.0;
    type t_throttle is new t_control range 0.0 .. 100.0;
 
-   -- Aircraft status
-   type t_aircraft_status is record
-      aileron   : t_aileron;
-      elevator  : t_elevator;
-      rudder    : t_rudder;
-      throttle1 : t_throttle;
-      throttle2 : t_throttle;
-
-      latitude  : t_latitude;
-      longitude : t_longitude;
-      altitude  : t_altitude;
-
-      heading   : t_heading;
-      velocity  : t_velocity;
-      vertspeed : t_vertspeed;
-
-      roll      : t_roll;
-      pitch     : t_pitch;
-   end record;
-
-   -- Aircraft controls
-   type t_aircraft_control is record
-      command_aileron     : t_aileron;
-      command_elevator    : t_elevator;
-      command_rudder      : t_rudder;
-      command_throttle1   : t_throttle;
-      command_throttle2   : t_throttle;
-      target_roll         : t_roll;
-      target_pitch        : t_pitch;
-      target_vertspeed    : t_vertspeed;
+   type t_nav_target is record
+      heading : t_heading;
+      altitude : t_altitude;
+      velocity : t_velocity;
    end record;
 
    -- GCAS
    type t_GCAS_state is (GCAS_state_disengaged, GCAS_state_emergency, GCAS_state_recovery, GCAS_state_stabilize);
+   for t_GCAS_state'Size use 32;
+
+   -- NAV
+   type t_waypoint is record
+      ID        : Natural;
+      latitude  : t_latitude;
+      longitude : t_longitude;
+      altitude  : t_altitude;
+      velocity  : t_velocity;
+   end record;
+   for t_waypoint use record
+      ID        at  0 range 0 .. 31;
+      latitude  at  4 range 0 .. 31;
+      longitude at  8 range 0 .. 31;
+      altitude  at 12 range 0 .. 31;
+      velocity  at 16 range 0 .. 31;
+   end record;
+
+   type t_waypoints is array (Natural range 1..128) of t_waypoint;
 
 
 end types;

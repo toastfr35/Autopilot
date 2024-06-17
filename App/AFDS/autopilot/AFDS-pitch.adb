@@ -71,10 +71,10 @@ package body AFDS.pitch is
    function pitch_correction return t_pitch_correction is
    begin
       if emergency_enabled then
-         AFDS.iface.aircraft.control.set_target_pitch (emergency_pitch_angle);
+         AFDS.iface.aircraft.control.target_pitch := emergency_pitch_angle;
          return t_pitch_correction (emergency_pitch_angle - AFDS.iface.aircraft.status.pitch);
       else
-         AFDS.iface.aircraft.control.set_target_pitch (target_pitch_angle);
+         AFDS.iface.aircraft.control.target_pitch := target_pitch_angle;
          return t_pitch_correction (target_pitch_angle - AFDS.iface.aircraft.status.pitch);
       end if;
    end pitch_correction;

@@ -2,8 +2,7 @@
 -- Package GCAS.IMPL
 --
 -- Ground Collision Avoidance System
--- Detect potential collision with the ground and execute
--- emergency avoidance maneuver if required
+-- Detect potential collision with the ground
 -------------------------------------------------------
 
 

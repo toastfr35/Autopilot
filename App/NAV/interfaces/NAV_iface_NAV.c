@@ -6,9 +6,15 @@
 -- * write access to the NAV controls for NAV
 -------------------------------------------------------*/
 
+#include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
+#include "NAV_iface_NAV.h"
+#include "components.h"
+
+void log_NAV(char *);
+
 
 //-----------------------------------
 // Fixpoint <-> float conversion
@@ -19,55 +25,79 @@ static float fixpoint_3_to_float(int32_t v) { return ((float)v) / 1024.0; }
 static float fixpoint_6_to_float(int32_t v) { return ((float)v) / (1024.0 * 1024.0); }
 
 typedef struct {
-  uint32_t enabled;
   uint32_t heading;
   uint32_t altitude;
   uint32_t velocity;
-} t_nav_data;
+} t_COMIF_NAV_nav_target;  
 
-static t_nav_data nav_data;
+typedef struct {
+  uint32_t ID;
+  uint32_t latitude;
+  uint32_t longitude;
+  uint32_t altitude;
+  uint32_t velocity;
+} t_COMIF_NAV_waypoint;  
+      
+typedef struct {
+  uint32_t enabled;
+  t_COMIF_NAV_nav_target nav_target;
+  uint32_t target_latitude;
+  uint32_t target_longitude;
+  uint32_t current_waypoint_index;  
+  t_COMIF_NAV_waypoint waypoints[128];
+} t_COMIF_NAV_status;
 
+static t_COMIF_NAV_status COMIF_NAV_status;
+t_NAV_status NAV_NAV_status;
 
-bool  NAV_iface_NAV_get_enabled  (void) {return (bool)nav_data.enabled;}
-float NAV_iface_NAV_get_heading  (void) {return fixpoint_6_to_float(nav_data.heading);}
-float NAV_iface_NAV_get_altitude (void) {return fixpoint_3_to_float(nav_data.altitude);}
-float NAV_iface_NAV_get_velocity (void) {return fixpoint_3_to_float(nav_data.velocity);}
+extern t_COMIF_NAV_status COMIF_NAV_read_status (t_component);
+extern void COMIF_NAV_write_status (t_component, t_COMIF_NAV_status *);
+extern void COMIF_NAV_reset(void);
+extern void COMIF_NAV_dump(void);
 
-
-void NAV_iface_NAV_set_enabled  (bool v)  {nav_data.enabled  = (uint32_t)v;}
-void NAV_iface_NAV_set_heading  (float v) {nav_data.heading  = float_to_fixpoint_6(v);}
-void NAV_iface_NAV_set_altitude (float v) {nav_data.altitude = float_to_fixpoint_3(v);}
-void NAV_iface_NAV_set_velocity (float v) {nav_data.velocity = float_to_fixpoint_3(v);}
-
-
-extern uint8_t IFACE_NAV_is_enabled(void);
-extern uint32_t IFACE_NAV_get_heading(void);
-extern uint32_t IFACE_NAV_get_altitude(void);
-extern uint32_t IFACE_NAV_get_velocity(void);
-
-void NAV_iface_NAV_read(void) {
-  nav_data.enabled = IFACE_NAV_is_enabled();
-  nav_data.heading = IFACE_NAV_get_heading();
-  nav_data.altitude = IFACE_NAV_get_altitude();
-  nav_data.velocity = IFACE_NAV_get_velocity();
+void NAV_iface_NAV_read(void)
+{
+  COMIF_NAV_status = COMIF_NAV_read_status(Comp_NAV);
+  NAV_NAV_status.enabled  = (bool)COMIF_NAV_status.enabled;
+  NAV_NAV_status.nav_target.heading   = fixpoint_6_to_float(COMIF_NAV_status.nav_target.heading);
+  NAV_NAV_status.nav_target.altitude  = fixpoint_3_to_float(COMIF_NAV_status.nav_target.altitude);
+  NAV_NAV_status.nav_target.velocity  = fixpoint_3_to_float(COMIF_NAV_status.nav_target.velocity);
+  NAV_NAV_status.target_latitude  = fixpoint_6_to_float(COMIF_NAV_status.target_latitude);
+  NAV_NAV_status.target_longitude = fixpoint_6_to_float(COMIF_NAV_status.target_longitude);
+  NAV_NAV_status.current_waypoint_index = COMIF_NAV_status.current_waypoint_index - 1; // C -> C indexing
+  
+  for (int i = 0; i < 128; i++) {
+    NAV_NAV_status.waypoints[i].ID        = COMIF_NAV_status.waypoints[i].ID;
+    NAV_NAV_status.waypoints[i].latitude  = fixpoint_6_to_float(COMIF_NAV_status.waypoints[i].latitude);
+    NAV_NAV_status.waypoints[i].longitude = fixpoint_6_to_float(COMIF_NAV_status.waypoints[i].longitude);
+    NAV_NAV_status.waypoints[i].altitude  =  fixpoint_3_to_float(COMIF_NAV_status.waypoints[i].altitude);
+    NAV_NAV_status.waypoints[i].velocity  =  fixpoint_3_to_float(COMIF_NAV_status.waypoints[i].velocity);
+    if (NAV_NAV_status.waypoints[i].ID == 0) break;
+  }
 }
 
-
-extern void IFACE_NAV_set_enabled(uint8_t);
-extern void IFACE_NAV_set_heading(uint32_t);
-extern void IFACE_NAV_set_altitude(uint32_t);
-extern void IFACE_NAV_set_velocity(uint32_t);
-
-void NAV_iface_NAV_write(void) {
-  IFACE_NAV_set_enabled(nav_data.enabled);
-  IFACE_NAV_set_heading(nav_data.heading);
-  IFACE_NAV_set_altitude(nav_data.altitude);
-  IFACE_NAV_set_velocity(nav_data.enabled);
+void NAV_iface_NAV_write (void) 
+{
+  COMIF_NAV_status.enabled  = NAV_NAV_status.enabled;
+  COMIF_NAV_status.nav_target.heading   = float_to_fixpoint_6(NAV_NAV_status.nav_target.heading);
+  COMIF_NAV_status.nav_target.altitude  = float_to_fixpoint_3(NAV_NAV_status.nav_target.altitude);
+  COMIF_NAV_status.nav_target.velocity  = float_to_fixpoint_3(NAV_NAV_status.nav_target.velocity);
+  COMIF_NAV_status.target_latitude  = float_to_fixpoint_6 (NAV_NAV_status.target_latitude);
+  COMIF_NAV_status.target_longitude = float_to_fixpoint_6 (NAV_NAV_status.target_longitude);
+  COMIF_NAV_status.current_waypoint_index  = NAV_NAV_status.current_waypoint_index + 1; // C -> Ada indexing
+  for (int i = 0; i < 128; i++) {
+    COMIF_NAV_status.waypoints[i].ID        = NAV_NAV_status.waypoints[i].ID;
+    COMIF_NAV_status.waypoints[i].latitude  = float_to_fixpoint_6(NAV_NAV_status.waypoints[i].latitude);
+    COMIF_NAV_status.waypoints[i].longitude = float_to_fixpoint_6(NAV_NAV_status.waypoints[i].longitude);
+    COMIF_NAV_status.waypoints[i].altitude  = float_to_fixpoint_3(NAV_NAV_status.waypoints[i].altitude);
+    COMIF_NAV_status.waypoints[i].velocity  = float_to_fixpoint_3(NAV_NAV_status.waypoints[i].velocity);
+    if (COMIF_NAV_status.waypoints[i].ID == 0) break;
+  }
+  COMIF_NAV_write_status(Comp_NAV, &COMIF_NAV_status);
 }
 
-
-void NAV_iface_NAV_reset(void) {
-    memset (&nav_data, 0, sizeof(t_nav_data));
+void NAV_iface_NAV_reset(void)
+{
+  COMIF_NAV_reset();
+  NAV_iface_NAV_read();
 }
-
-

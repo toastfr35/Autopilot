@@ -1,41 +1,18 @@
+#include "NAV_iface_NAV.h"
 #include "waypoints.h"
-
-
-// The list of waypoint
-t_waypoint waypoint_list[256];
-uint32_t nb_waypoints;
-uint32_t current_waypoint = 0;
-
-
-//-----------------------------------
-//
-//-----------------------------------
-void clear_waypoints(void) {
-  nb_waypoints = 0;
-}
-
-
-//-----------------------------------
-//
-//-----------------------------------
-void add_waypoint(float latitude, float longitude, float altitude) {
-  waypoint_list[nb_waypoints].latitude = latitude;
-  waypoint_list[nb_waypoints].longitude = longitude;
-  waypoint_list[nb_waypoints].altitude = altitude;
-  nb_waypoints++;
-}
-
+#include "stdio.h"
 
 //-----------------------------------
 // Get the currently active waypoint index
 //-----------------------------------
-uint32_t get_current_waypoint_index(bool *success) {
-  if (current_waypoint >= nb_waypoints) {
+uint32_t get_current_waypoint_index(bool *success)
+{
+  if (NAV_NAV_status.current_waypoint_index == -1) {
     *success = false;
     return -1;
   }
   *success = true;
-  return current_waypoint;
+  return NAV_NAV_status.current_waypoint_index;
 }
 
 
@@ -43,16 +20,16 @@ uint32_t get_current_waypoint_index(bool *success) {
 // Get the currently active waypoint
 //-----------------------------------
 t_waypoint get_current_waypoint (bool * success) {
-  t_waypoint R = {0.0,0.0,0.0};
+  t_waypoint R = {0, 0.0, 0.0, 0.0, 0.0};
 
-  if (current_waypoint >= nb_waypoints) {
-    *success = false;
-    return R;
-  }
+  uint32_t index = get_current_waypoint_index(success);
+  if (! *success) return R;
 
-  R.latitude  = waypoint_list[current_waypoint].latitude;
-  R.longitude = waypoint_list[current_waypoint].longitude;
-  R.altitude  = waypoint_list[current_waypoint].altitude;
+  R.ID        = NAV_NAV_status.waypoints[index].ID;
+  R.latitude  = NAV_NAV_status.waypoints[index].latitude;
+  R.longitude = NAV_NAV_status.waypoints[index].longitude;
+  R.altitude  = NAV_NAV_status.waypoints[index].altitude;
+  R.velocity  = NAV_NAV_status.waypoints[index].velocity;
   *success = true;
 
   return R;
@@ -64,9 +41,19 @@ t_waypoint get_current_waypoint (bool * success) {
 // Return 0 if the end of the list was reached
 //-----------------------------------
 void move_to_next_waypoint(bool *success) {
-  if (current_waypoint < nb_waypoints) {
-    current_waypoint++;
-    *success = true;
+  if (NAV_NAV_status.current_waypoint_index != -1) {
+    NAV_NAV_status.current_waypoint_index++;
+    if (NAV_NAV_status.current_waypoint_index == 128) {
+      // end of array reached
+      NAV_NAV_status.current_waypoint_index = -1;
+      *success = false;
+    } else if (NAV_NAV_status.waypoints[NAV_NAV_status.current_waypoint_index].ID == 0) {
+      // end marker reached
+      NAV_NAV_status.current_waypoint_index = -1;
+      *success = false;
+    } else {
+      *success = true;
+    }
   } else {
     *success = false;
   }

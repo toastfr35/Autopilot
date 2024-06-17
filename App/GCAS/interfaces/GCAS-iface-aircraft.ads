@@ -6,16 +6,15 @@
 -- * write access to the aircraft controls for AFDS
 -------------------------------------------------------
 
-with types; use types;
+with COMIF.aircraft;
 
 package GCAS.iface.aircraft is
 
-   function status return t_aircraft_status;
+   subtype t_aircraft_status is COMIF.aircraft.t_aircraft_status;
 
-   -- update input
-   procedure read;
+   status  : t_aircraft_status;
 
-   -- reset internal state
    procedure reset;
+   procedure read;
 
 end GCAS.iface.aircraft;

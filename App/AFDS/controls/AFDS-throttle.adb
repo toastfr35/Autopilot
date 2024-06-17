@@ -23,7 +23,8 @@ package body AFDS.throttle is
    -------------------------------
    procedure set_target(v1, v2 : t_throttle) is
    begin
-      AFDS.iface.aircraft.control.set_throttles(v1, v2);
+      AFDS.iface.aircraft.control.command_throttle1 := v1;
+      AFDS.iface.aircraft.control.command_throttle2 := v2;
    end set_target;
 
 

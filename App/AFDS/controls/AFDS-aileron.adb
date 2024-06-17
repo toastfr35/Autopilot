@@ -27,7 +27,7 @@ package body AFDS.aileron is
       delta_v  : constant Float := target_v - curr_v;
    begin
       curr_v := curr_v + (delta_v / 5.0);
-      AFDS.iface.aircraft.control.set_aileron(t_aileron(curr_v));
+      AFDS.iface.aircraft.control.command_aileron := t_aileron(curr_v);
    end set_target;
 
 

@@ -62,10 +62,10 @@ package body AFDS.roll is
    function roll_correction return t_roll_correction is
    begin
       if emergency_enabled then
-         AFDS.iface.aircraft.control.set_target_roll (emergency_roll_angle);
+         AFDS.iface.aircraft.control.target_roll := emergency_roll_angle;
          return t_roll_correction (emergency_roll_angle - AFDS.iface.aircraft.status.roll);
       else
-         AFDS.iface.aircraft.control.set_target_roll (target_roll_angle);
+         AFDS.iface.aircraft.control.target_roll := target_roll_angle;
          return t_roll_correction (target_roll_angle - AFDS.iface.aircraft.status.roll);
       end if;
    end roll_correction;

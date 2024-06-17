@@ -3,7 +3,8 @@
 -- For simulation/testing only
 -------------------------------------------
 
-with IFACE.aircraft;
+with components; use components;
+with COMIF.aircraft; use COMIF.aircraft;
 with math; use math;
 with average;
 
@@ -13,6 +14,7 @@ package body FDM is
    pitch_speed : Float := 0.0;
 
    dt : Float;
+   status : COMIF.aircraft.t_aircraft_status;
 
    package avg_roll_speed is new average(10);
 
@@ -25,24 +27,27 @@ package body FDM is
                   heading   : t_heading;
                   velocity  : t_velocity)
    is
+      status : t_aircraft_status;
    begin
-      IFACE.aircraft.SIM.set_aileron (0.0);
-      IFACE.aircraft.SIM.set_elevator (0.0);
-      IFACE.aircraft.SIM.set_rudder (0.0);
-      IFACE.aircraft.SIM.set_throttle1 (50.0);
-      IFACE.aircraft.SIM.set_throttle2 (50.0);
-      IFACE.aircraft.SIM.set_latitude (latitude);
-      IFACE.aircraft.SIM.set_longitude (longitude);
-      IFACE.aircraft.SIM.set_altitude (altitude);
-      IFACE.aircraft.SIM.set_heading (heading);
-      IFACE.aircraft.SIM.set_velocity (velocity);
-      IFACE.aircraft.SIM.set_roll (0.0);
-      IFACE.aircraft.SIM.set_pitch (0.0);
-      IFACE.aircraft.SIM.set_vertspeed (0.0);
+      status.aileron   := 0.0;
+      status.elevator  := 0.0;
+      status.rudder    := 0.0;
+      status.throttle1 := 50.0;
+      status.throttle2 := 50.0;
+      status.latitude  := latitude;
+      status.longitude := longitude;
+      status.altitude  := altitude;
+      status.heading   := heading;
+      status.velocity  := velocity;
+      status.vertspeed := 0.0;
+      status.roll      := 0.0;
+      status.pitch     := 0.0;
+      COMIF.aircraft.write_status (Comp_FDM, status);
       roll_speed := 0.0;
       pitch_speed := 0.0;
       avg_roll_speed.reset;
    end set;
+
 
    -------------------------------
    -- initialize the aircraft state
@@ -51,6 +56,7 @@ package body FDM is
    begin
       set (0.0, 0.0, 0.0, 0.0, 0.0);
    end init;
+
 
    -------------------------------
    -- saturate a float
@@ -69,10 +75,10 @@ package body FDM is
    -- pitch + throttle => velocity
    -------------------------------
    procedure update_velocity is
-      v : constant Float := Float (IFACE.aircraft.status.velocity);
-      pitch : constant Float := Float (IFACE.aircraft.status.pitch);
+      v : constant Float := Float (status.velocity);
+      pitch : constant Float := Float (status.pitch);
       airbraking : constant Float := (v*v) / 50000.0;
-      acceleration : constant Float := (Float(IFACE.aircraft.status.throttle1) + Float(IFACE.aircraft.status.throttle2)) / 16.0;
+      acceleration : constant Float := (Float(status.throttle1) + Float(status.throttle2)) / 16.0;
       dv : Float := (acceleration - airbraking) / 10.0;
    begin
       if dv > 0.0 then
@@ -96,7 +102,7 @@ package body FDM is
          end if;
       end if;
 
-      IFACE.aircraft.SIM.set_velocity (t_velocity(v + dv));
+      status.velocity := t_velocity(v + dv);
    end update_velocity;
 
 
@@ -104,10 +110,10 @@ package body FDM is
    -- pitch + velocity => vertspeed
    -------------------------------
    procedure update_vertspeed is
-      v : Float := Float (IFACE.aircraft.status.vertspeed);
+      v : Float := Float (status.vertspeed);
       n_v : Float;
-      velocity : constant Float := Float (IFACE.aircraft.status.velocity);
-      pitch : constant Float := Float (IFACE.aircraft.status.pitch);
+      velocity : constant Float := Float (status.velocity);
+      pitch : constant Float := Float (status.pitch);
    begin
       if pitch < 0.0 then
          -- going up
@@ -119,7 +125,7 @@ package body FDM is
       end if;
       v := n_v / 2.0;
       saturate (v, -250.0, 150.0);
-      IFACE.aircraft.SIM.set_vertspeed (t_vertspeed(v));
+      status.vertspeed := t_vertspeed(v);
    end update_vertspeed;
 
 
@@ -127,7 +133,7 @@ package body FDM is
    -- elevator => pitch_speed
    -------------------------------
    procedure update_pitch_speed is
-      elevator : constant Float := Float(IFACE.aircraft.status.elevator);
+      elevator : constant Float := Float(status.elevator);
    begin
       if elevator > 0.0 then
          -- going up => pitch--
@@ -143,12 +149,12 @@ package body FDM is
    -- pitch_speed => pitch
    -------------------------------
    procedure update_pitch is
-      pitch : constant Float := Float (IFACE.aircraft.status.pitch);
+      pitch : constant Float := Float (status.pitch);
       v : Float;
    begin
       v := pitch + pitch_speed * dt;
       saturate (v, Float(t_pitch'First), Float(t_pitch'Last));
-      IFACE.aircraft.SIM.set_pitch (t_pitch (v));
+      status.pitch := t_pitch (v);
    end update_pitch;
 
 
@@ -158,8 +164,8 @@ package body FDM is
    procedure update_altitude is
       v : Float;
    begin
-      v := Float(IFACE.aircraft.status.altitude) + Float(IFACE.aircraft.status.vertspeed) * dt;
-      IFACE.aircraft.SIM.set_altitude (t_altitude (v));
+      v := Float(status.altitude) + Float(status.vertspeed) * dt;
+      status.altitude := t_altitude (v);
    end update_altitude;
 
 
@@ -171,7 +177,7 @@ package body FDM is
    begin
       -- aileron > 0 => roll right : roll angle --
       -- ailreon < 0 => roll left  : roll angle ++
-      v := - Float(IFACE.aircraft.status.aileron) * 2.0;
+      v := - Float(status.aileron) * 2.0;
       avg_roll_speed.add (v);
       roll_speed := avg_roll_speed.get;
    end update_roll_speed;
@@ -183,9 +189,9 @@ package body FDM is
    procedure update_roll is
       v : Float;
    begin
-      v := Float(IFACE.aircraft.status.roll) + roll_speed * dt;
+      v := Float(status.roll) + roll_speed * dt;
       saturate (v, Float(t_roll'First), Float(t_roll'Last));
-      IFACE.aircraft.SIM.set_roll (t_roll (v));
+      status.roll := t_roll (v);
    end update_roll;
 
 
@@ -193,18 +199,18 @@ package body FDM is
    -- roll + elevator + rudder => heading
    -------------------------------
    procedure update_heading is
-      h : Float := Float (IFACE.aircraft.status.heading);
+      h : Float := Float (status.heading);
       d_h1 : Float;
       d_h2 : Float;
    begin
       -- roll + elevator
       -- roll < 0: heading++
       -- roll > 0: heading--
-      d_h1 := -1.0 * fsin_deg(Float(IFACE.aircraft.status.roll)) * Float(IFACE.aircraft.status.elevator);
+      d_h1 := -1.0 * fsin_deg(Float(status.roll)) * Float(status.elevator);
       d_h1 := d_h1 / 25.0;
 
       -- rudder
-      d_h2 := (Float(IFACE.aircraft.status.rudder) / 100.0);
+      d_h2 := (Float(status.rudder) / 100.0);
 
       if d_h2 /= 0.0 then
          h := h + d_h2;
@@ -217,8 +223,7 @@ package body FDM is
       elsif h > 360.0 then
          h := h - 360.0;
       end if;
-
-      IFACE.aircraft.SIM.set_heading (t_heading(h));
+      status.heading := t_heading(h);
    end update_heading;
 
 
@@ -226,11 +231,11 @@ package body FDM is
    -- heading + velocity => latitude
    -------------------------------
    procedure update_latitude is
-      velocity_ms : constant Float := Float(IFACE.aircraft.status.velocity) * 0.514444; -- knots -> m/s
-      northward_velocity_ms : constant Float := velocity_ms * fcos_deg(Float(IFACE.aircraft.status.heading));
+      velocity_ms : constant Float := Float(status.velocity) * 0.514444; -- knots -> m/s
+      northward_velocity_ms : constant Float := velocity_ms * fcos_deg(Float(status.heading));
       latitude_change_m : constant Float := northward_velocity_ms * dt;
       latitude_change_deg : constant Float := latitude_change_m / 111139.0;
-      latitude_deg : Float := Float(IFACE.aircraft.status.latitude);
+      latitude_deg : Float := Float(status.latitude);
    begin
       latitude_deg := latitude_deg + latitude_change_deg;
       if latitude_deg > 90.0 then
@@ -239,7 +244,7 @@ package body FDM is
       if latitude_deg < -90.0 then
          latitude_deg := latitude_deg + 180.0;
       end if;
-      IFACE.aircraft.SIM.set_latitude (t_latitude (latitude_deg));
+      status.latitude := t_latitude (latitude_deg);
    end update_latitude;
 
 
@@ -247,11 +252,11 @@ package body FDM is
    -- heading + velocity => longitude
    -------------------------------
    procedure update_longitude is
-      velocity_ms : constant Float := Float(IFACE.aircraft.status.velocity) * 0.514444; -- knots -> m/s
-      eastward_velocity_ms : constant Float := velocity_ms * fsin_deg(Float(IFACE.aircraft.status.heading));
+      velocity_ms : constant Float := Float(status.velocity) * 0.514444; -- knots -> m/s
+      eastward_velocity_ms : constant Float := velocity_ms * fsin_deg(Float(status.heading));
       longitude_change_m : constant Float := eastward_velocity_ms * dt;
-      longitude_change_deg : constant Float := longitude_change_m / (111320.0 * fcos_deg(Float(IFACE.aircraft.status.latitude)));
-      longitude_deg : Float := Float(IFACE.aircraft.status.longitude);
+      longitude_change_deg : constant Float := longitude_change_m / (111320.0 * fcos_deg(Float(status.latitude)));
+      longitude_deg : Float := Float(status.longitude);
    begin
       longitude_deg := longitude_deg + longitude_change_deg;
       if longitude_deg > 180.0 then
@@ -260,7 +265,7 @@ package body FDM is
       if longitude_deg < -180.0 then
          longitude_deg := longitude_deg + 360.0;
       end if;
-      IFACE.aircraft.SIM.set_longitude (t_longitude (longitude_deg));
+      status.longitude := t_longitude (longitude_deg);
    end update_longitude;
 
 
@@ -268,8 +273,20 @@ package body FDM is
    -- update the aircraft state
    -------------------------------
    procedure update(hz : Natural) is
+      control : constant COMIF.aircraft.t_aircraft_control := COMIF.aircraft.read_control (Comp_FDM);
    begin
       dt := 1.0 / Float(hz);
+
+      status := COMIF.aircraft.read_status (Comp_FDM);
+
+      -- simulating 0 delay effect of controls
+      status.aileron   := control.command_aileron;
+      status.elevator  := control.command_elevator;
+      status.rudder    := control.command_rudder;
+      status.throttle1 := control.command_throttle1;
+      status.throttle2 := control.command_throttle2;
+
+      -- update the aircraft status
 
       update_longitude;
       update_latitude;
@@ -285,8 +302,7 @@ package body FDM is
       update_roll_speed;
       update_pitch_speed;
 
-      -- simulating 0 delay effect of controls
-      IFACE.aircraft.SIM.apply_all_commands;
+      COMIF.aircraft.write_status (Comp_FDM, status);
    end update;
 
 end FDM;

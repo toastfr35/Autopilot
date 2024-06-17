@@ -36,7 +36,7 @@ package body AFDS.elevator is
       else
          curr_v := target_v;
       end if;
-      AFDS.iface.aircraft.control.set_elevator(t_elevator(curr_v));
+      AFDS.iface.aircraft.control.command_elevator := t_elevator(curr_v);
    end set_target;
 
 

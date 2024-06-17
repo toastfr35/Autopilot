@@ -4,15 +4,15 @@
 -- Read current GCAS state
 -------------------------------------------------------
 
-with types; use types;
+with COMIF.GCAS;
 
 package AFDS.iface.GCAS is
 
+   subtype t_GCAS_status  is COMIF.GCAS.t_GCAS_status;
+
+   status  : t_GCAS_status;
+
    procedure reset;
-   -- reset internal state
-
    procedure read;
-
-   function get_state return t_GCAS_state;
 
 end AFDS.iface.GCAS;

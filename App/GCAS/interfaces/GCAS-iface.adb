@@ -16,8 +16,8 @@ package body GCAS.iface is
    -------------------------------
    procedure reset is
    begin
-      Standard.GCAS.iface.aircraft.reset;
-      Standard.GCAS.iface.GCAS.reset;
+      aircraft.reset;
+      GCAS.reset;
    end reset;
 
 
@@ -26,8 +26,8 @@ package body GCAS.iface is
    -------------------------------
    procedure read is
    begin
-      Standard.GCAS.iface.aircraft.read;
-      Standard.GCAS.iface.GCAS.read;
+      aircraft.read;
+      GCAS.read;
    end read;
 
 
@@ -36,7 +36,7 @@ package body GCAS.iface is
    -------------------------------
    procedure write is
    begin
-      Standard.GCAS.iface.GCAS.write;
+      GCAS.write;
    end write;
 
 

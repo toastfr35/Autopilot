@@ -1,13 +1,5 @@
-package body img is
 
-   --function float_to_string (v : Float) return String is
-   --   A : constant Integer := Integer(v);
-   --   B : constant Integer := Integer(v * 10.0) - (A * 10);
-   --   A_str : constant String := A'Img;
-   --   B_str : constant String := B'Img;
-   --begin
-   --   return A_str & "." & B_str(B_str'First+1 .. B_str'Last);
-   --end float_to_string;
+package body img is
 
    function float_to_string (v : Float) return String;
 
@@ -54,11 +46,11 @@ package body img is
       Str(Pos) := '.';
       Pos := Pos + 1;
 
-      if Frac_Part < 1000 then
+      if Frac_Part < 100 then
          Str(Pos) := '0';
          Pos := Pos + 1;
       end if;
-      if Frac_Part < 100 then
+      if Frac_Part < 10 then
          Str(Pos) := '0';
          Pos := Pos + 1;
       end if;

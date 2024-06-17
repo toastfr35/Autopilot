@@ -8,69 +8,105 @@
 
 #include "stdio.h"
 
+void log_NAV(char *);
+
 static float distance_threshold = 100.0;
 
+float NAV_heading;
+float NAV_distance;
 
 //-----------------------------------
 // Reset internal state
 //-----------------------------------
-void NAV_impl_reset() {
-  clear_waypoints();
+void NAV_impl_reset()
+{
 }
 
 
 //-----------------------------------
 // Get the current aircraft position as a waypoint
 //-----------------------------------
-t_waypoint get_current_position(void) {
+static t_waypoint get_current_position(void)
+{
   t_waypoint R;
-  R.latitude  = NAV_iface_aircraft_get_latitude();
-  R.longitude = NAV_iface_aircraft_get_longitude();
-  R.altitude  = NAV_iface_aircraft_get_altitude();
+  R.latitude  = NAV_aircraft_status.latitude;
+  R.longitude = NAV_aircraft_status.longitude;
+  R.altitude  = NAV_aircraft_status.altitude;
   return R;
+}
+
+
+//-----------------------------------
+// Disable NAV
+//-----------------------------------
+static void disable_NAV(void)
+{
+  log_NAV("NAV: Disable NAV");
+  NAV_NAV_status.enabled = 0;
+
+  // keep the current heading, velocity and altitude
+  NAV_NAV_status.nav_target.heading  = NAV_aircraft_status.heading;
+  NAV_NAV_status.nav_target.velocity = NAV_aircraft_status.velocity;
+  NAV_NAV_status.nav_target.altitude = NAV_aircraft_status.altitude;
+  NAV_NAV_status.target_latitude = 0.0;
+  NAV_NAV_status.target_longitude = 0.0;
 }
 
 
 //-----------------------------------
 // Update desired heading to next waypoint
 //-----------------------------------
-void NAV_impl_step() {
+void NAV_impl_step()
+{
   // static uint32_t count = 0;
   // count++;
+
   static float prev_heading = 0.0;
   bool success;
   t_waypoint from = get_current_position();
   t_waypoint to = get_current_waypoint(&success);
 
+  // only perform the step if NAV is enabled
+  if (! NAV_NAV_status.enabled)
+    return;
+
   if (!success) {
     // no more waypoints
+    log_NAV ("NAV: No more waypoints");
+    disable_NAV();
     return;
   }
 
   // calculate the distance and heading to the next waypoint
-  float distance = calculate_distance(from, to);
-  float heading = calculate_heading(from, to);
+  NAV_distance = calculate_distance(from, to);
+  NAV_heading = calculate_heading(from, to);
 
-  /*if (0 == (count % 1000)) {
-    printf("NAV %f (%d, %f, %f) -> (%d, %f, %f) : %d %.1f\n",
-           fixpoint_6_to_float(aircraft_interface_data.heading),
+  /*
+  if (0 == (count % 1000)) {
+    printf("NAV : (%d, %f, %f) -> (%d, %f, %f) : %d %.1f\n",
            (int)from.altitude, from.latitude, from.longitude, (int)to.altitude,
-           to.latitude, to.longitude, (int)distance, heading);
-  }*/
+           to.latitude, to.longitude, (int)NAV_distance, NAV_heading);
+  }
+  */
 
   // update the NAV interface
-  if (fabs(heading-prev_heading) >= 0.5) {
-    NAV_iface_NAV_set_heading(heading);
-    prev_heading = heading;
+  if (fabs(NAV_heading-prev_heading) >= 0.5) {
+    NAV_NAV_status.nav_target.heading = NAV_heading;
+    prev_heading = NAV_heading;
   }
-  NAV_iface_NAV_set_altitude(to.altitude);
-  NAV_iface_NAV_set_velocity(300.0);
+  NAV_NAV_status.target_latitude = to.latitude;
+  NAV_NAV_status.target_longitude = to.longitude;
+  NAV_NAV_status.nav_target.altitude = to.altitude;
+  NAV_NAV_status.nav_target.velocity = to.velocity;
 
   // close enough to the next waypoint?
-  if (distance < distance_threshold) {
+  if (NAV_distance < distance_threshold) {
+    log_NAV("NAV: Close enough");
     move_to_next_waypoint(&success);
     if (!success) {
       // no more waypoints
+      log_NAV("NAV: No more waypoints");
+      disable_NAV();
       return;
     }
   }

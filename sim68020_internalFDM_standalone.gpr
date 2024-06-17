@@ -9,7 +9,7 @@ project sim68020_internalFDM_standalone is
 	
 	package Compiler is
 		for Default_Switches ("Ada") use ("-O0", "-g", "-gnata", "-gnatwa", "-gnatw.X");
-		for Default_Switches ("C")   use ("-O0", "-g", "-Wall", "-Werror");
+		for Default_Switches ("C")   use ("-O0", "-g", "-Wall", "-Werror", "-m68020", "-m68881");
 	end Compiler;
 
 end sim68020_internalFDM_standalone;

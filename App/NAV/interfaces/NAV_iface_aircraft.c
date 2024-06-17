@@ -7,6 +7,8 @@
 
 #include <string.h>
 #include <stdint.h>
+#include "NAV_iface_aircraft.h"
+#include "components.h"
 
 //-----------------------------------
 // Fixpoint <-> float conversion
@@ -31,34 +33,35 @@ typedef struct {
 
   uint32_t roll;
   uint32_t pitch;
-} t_aircraft_data;
+} t_COMIF_aircraft_status;
 
-static t_aircraft_data aircraft_data;
+static t_COMIF_aircraft_status COMIF_aircraft_status;
+t_aircraft_status NAV_aircraft_status;
 
-float NAV_iface_aircraft_get_aileron   (void) {return fixpoint_3_to_float (aircraft_data.aileron);}
-float NAV_iface_aircraft_get_elevator  (void) {return fixpoint_3_to_float (aircraft_data.elevator);}
-float NAV_iface_aircraft_get_rudder    (void) {return fixpoint_3_to_float (aircraft_data.rudder);}
-float NAV_iface_aircraft_get_throttle1 (void) {return fixpoint_3_to_float (aircraft_data.throttle1);}
-float NAV_iface_aircraft_get_throttle2 (void) {return fixpoint_3_to_float (aircraft_data.throttle2);}
-float NAV_iface_aircraft_get_latitude  (void) {return fixpoint_6_to_float (aircraft_data.latitude);}
-float NAV_iface_aircraft_get_longitude (void) {return fixpoint_6_to_float (aircraft_data.longitude);}
-float NAV_iface_aircraft_get_altitude  (void) {return fixpoint_3_to_float (aircraft_data.altitude);}
-float NAV_iface_aircraft_get_heading   (void) {return fixpoint_6_to_float (aircraft_data.heading);}
-float NAV_iface_aircraft_get_velocity  (void) {return fixpoint_3_to_float (aircraft_data.velocity);}
-float NAV_iface_aircraft_get_roll      (void) {return fixpoint_6_to_float (aircraft_data.roll);}
-float NAV_iface_aircraft_get_pitch     (void) {return fixpoint_6_to_float (aircraft_data.pitch);}
-float NAV_iface_aircraft_get_vertspeed (void) {return fixpoint_3_to_float (aircraft_data.vertspeed);}
+extern t_COMIF_aircraft_status COMIF_aircraft_read_status (t_component);
+extern void COMIF_aircraft_reset(void);
 
-
-extern t_aircraft_data IFACE_aircraft_status (void);
 void NAV_iface_aircraft_read (void)
 {
-  aircraft_data = IFACE_aircraft_status();
+  COMIF_aircraft_status = COMIF_aircraft_read_status(Comp_NAV);
+  NAV_aircraft_status.aileron   = fixpoint_3_to_float (COMIF_aircraft_status.aileron);
+  NAV_aircraft_status.elevator  = fixpoint_3_to_float (COMIF_aircraft_status.elevator);
+  NAV_aircraft_status.rudder    = fixpoint_3_to_float (COMIF_aircraft_status.rudder);
+  NAV_aircraft_status.throttle1 = fixpoint_3_to_float (COMIF_aircraft_status.throttle1);
+  NAV_aircraft_status.throttle2 = fixpoint_3_to_float (COMIF_aircraft_status.throttle2);
+  NAV_aircraft_status.latitude  = fixpoint_6_to_float (COMIF_aircraft_status.latitude);
+  NAV_aircraft_status.longitude = fixpoint_6_to_float (COMIF_aircraft_status.longitude);
+  NAV_aircraft_status.altitude  = fixpoint_3_to_float (COMIF_aircraft_status.altitude);
+  NAV_aircraft_status.heading   = fixpoint_6_to_float (COMIF_aircraft_status.heading);
+  NAV_aircraft_status.velocity  = fixpoint_3_to_float (COMIF_aircraft_status.velocity);
+  NAV_aircraft_status.roll      = fixpoint_6_to_float (COMIF_aircraft_status.roll);
+  NAV_aircraft_status.pitch     = fixpoint_6_to_float (COMIF_aircraft_status.pitch);
+  NAV_aircraft_status.vertspeed = fixpoint_3_to_float (COMIF_aircraft_status.vertspeed);
 }
 
-
-void NAV_iface_aircraft_reset (void)
+void NAV_iface_aircraft_reset(void)
 {
-  memset (&aircraft_data, 0, sizeof(t_aircraft_data));
+  COMIF_aircraft_reset();
+  NAV_iface_aircraft_read();
 }
 

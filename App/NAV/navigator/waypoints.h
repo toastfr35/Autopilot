@@ -10,8 +10,10 @@ typedef struct {
   float latitude;
   float longitude;
   float altitude;
+  float velocity;
 } t_waypoint;
 
+typedef t_waypoint t_waypoints[128];
 
 
 // Get the currently active waypoint index
@@ -25,13 +27,6 @@ t_waypoint get_current_waypoint (bool * success);
 // Make the next waypoint in the list active
 // Return 0 if the end of the list was reached
 void move_to_next_waypoint (bool * success);
-
-
-// Clear the waypoint list
-void clear_waypoints(void);
-
-// Add a waypoint to the list
-void add_waypoint(float latitude, float longitude, float altitude);
 
 
 
