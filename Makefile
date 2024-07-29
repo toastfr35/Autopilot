@@ -1,32 +1,32 @@
 
-GRPBUILD=/c/GNAT/23.1-x64/bin/gprbuild
 
-all : build_tests run
+# List targets
 
-build_tests : clean prep_tests
-	$(GRPBUILD) -Pwin_internalFDM.gpr -j16
+TARGETS=$(sort $(dir $(wildcard Target/*/)))
+TARGETS:=$(TARGETS:Target/%=%)
+TARGETS:=$(TARGETS:%/=%)
 
-build_notest : clean prep_notest
-	$(GRPBUILD) -Pwin_internalFDM.gpr -j16
+#---------------------------
+# Build all targets
 
+TARGET_BUILDS=$(addsuffix .build,$(TARGETS))
 
-prep_tests:
-	@echo 'pragma Warnings (off);' >  Tests/testlist.ads
-	@ls tests/test0*.ads | sed 's|tests/|with |' | sed 's|\.ads|;|' >> Tests/testlist.ads
-	@echo 'package testlist is'    >> Tests/testlist.ads
-	@echo 'end testlist;'          >> Tests/testlist.ads
+all : $(TARGET_BUILDS)
 
-prep_notest:
-	@echo 'pragma Warnings (off);' >  Tests/testlist.ads
-	@echo 'with notest;'           >>  Tests/testlist.ads
-	@echo 'package testlist is'    >> Tests/testlist.ads
-	@echo 'end testlist;'          >> Tests/testlist.ads
+%.build :
+	@echo "Building $*"
+	@$(MAKE) -s -C Target/$* clean
+	@($(MAKE) -s -C Target/$* -j 16 > log.$* 2>&1 && rm log.$*) || (cat log.$* ; rm log.$* ; exit 1)
+	@echo "Building $* OK"
 
 
-run : 
-	./obj/main.exe
+#---------------------------
+# Clean all targets
 
+TARGET_CLEANS=$(addsuffix .clean,$(TARGETS))
 
-clean :
-	@rm -rf obj Tests/testlist.ads *.csv
-	@mkdir -p obj
+clean : $(TARGET_CLEANS)
+
+%.clean :
+	@echo "Cleaning $*"
+	@$(MAKE) -s -C Target/$* clean

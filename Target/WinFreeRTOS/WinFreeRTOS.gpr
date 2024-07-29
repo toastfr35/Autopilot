@@ -1,0 +1,19 @@
+project WinFreeRTOS
+is
+    for Languages use ("Ada");
+    for Object_Dir use "obj";
+    for Source_Dirs use ("../../Autopilot/BSPs/winFreeRTOS",
+                        "../../Autopilot/App/**",
+                        "../../Autopilot/Simulation/simpleFDM",
+                        "../../Autopilot/Tests/System/Framework",
+                        "../../Autopilot/Tests/System/Tests",
+                        "FreeRTOS"
+                        );
+    for Create_Missing_Dirs use "True";
+    for Main use ("main.adb");
+
+    package Compiler is
+        for Switches ("ada") use ("-O0", "-g3", "-gnatp");
+    end Compiler;
+
+end WinFreeRTOS;
