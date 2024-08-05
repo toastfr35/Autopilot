@@ -5,7 +5,7 @@
 
  - **GCAS-002:** The GCAS component shall detect potential ground collisions by continuously monitoring the aircraft's altitude, vertical speed, horizontal speed, and terrain elevation data.
 
- - **GCAS-003:** The GCAS component shall implement an algorithm to predict potential collisions by evaluating future altitude projections against terrain elevations, accommodating both low-speed and normal-speed conditions.
+ - **GCAS-003:** The GCAS component shall implement an algorithm to predict potential collisions by evaluating future altitude projections against terrain elevations.
 
  - **GCAS-004:** The GCAS component shall maintain and update its operational state, transitioning through predefined states (e.g., disengaged, emergency, recovery, stabilize) based on collision predictions and aircraft performance data.
 
